@@ -1,0 +1,6 @@
+<launch>
+    <node pkg="lidar_camera_offline_calibration" type="lidar_camera_offline_calibration" name="ball_calibration" output="screen">
+
+    </node>
+
+</launch> 
