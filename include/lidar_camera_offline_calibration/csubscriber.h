@@ -11,10 +11,6 @@ class CSubscriber
     ros::Subscriber sub_image;
     ros::Subscriber sub_transform;
 
-    void ImageCallback(const sensor_msgs::Image::ConstPtr& image_msg);
-    void CloudCallback(const sensor_msgs::PointCloud2::ConstPtr& cloud_msg);
-    //void CallbackTransform(const lcm::ReceiveBuffer* recvBuf, const std::string& channelName, const TRANSFORM* msg);
-    void initROS();
 public:
     CSubscriber();
     void run();

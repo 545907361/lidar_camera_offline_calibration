@@ -18,9 +18,9 @@ int main(int argc, char** argv)
         return (EXIT_FAILURE);
     }
 
-    std::thread lcm_thread;
-    lcm_thread = std::thread( std::mem_fn(&CSubscriber::run), g_pSubscriber);
-    lcm_thread.join();
+    std::thread ros_thread;
+    ros_thread = std::thread( std::mem_fn(&CSubscriber::run), g_pSubscriber);
+    ros_thread.join();
     ros::spin();
     return 0;
 }

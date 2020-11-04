@@ -1,0 +1,3 @@
+# lidar_camera_offline_calibration
+用球体标定靶对摄像机和激光雷达进行标定
+

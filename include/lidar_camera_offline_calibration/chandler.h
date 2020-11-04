@@ -10,6 +10,13 @@
 #include <sensor_msgs/Image.h>
 #include <sensor_msgs/PointCloud.h>
 #include <sensor_msgs/PointCloud2.h>
+#include <pcl_conversions/pcl_conversions.h>
+#include <pcl/kdtree/kdtree.h>
+#include <pcl/search/impl/search.hpp>
+#include <pcl/search/kdtree.h>
+#include <pcl/search/search.h>
+#include <pcl/filters/conditional_removal.h>
+#include <pcl/filters/voxel_grid.h>
 
 #include <vector>
 #include <mutex>
@@ -41,6 +48,9 @@ public:
     void CallbackRawImage_a_0(const lcm::ReceiveBuffer* recvBuf, const std::string& channelName, const GMSL_IMAGE_ENCODE* msg);
     void CallbackRawLidar_32(const lcm::ReceiveBuffer* recvBuf, const std::string& channelName, const RSLIDAR_32_FRAME* msg);
     void CallbackTransform(const lcm::ReceiveBuffer* recvBuf, const std::string& channelName, const TRANSFORM* msg);
+    void ImageCallback(const sensor_msgs::Image::ConstPtr& image_msg);
+    void CloudCallback(const sensor_msgs::PointCloud2::ConstPtr& cloud_msg);
+    //void CallbackTransform(const lcm::ReceiveBuffer* recvBuf, const std::string& channelName, const TRANSFORM* msg);
 
     void recordPair();
     void clearRecord();

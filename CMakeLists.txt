@@ -54,9 +54,14 @@ SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
+  cv_bridge
+  image_transport
+  tf
   roscpp
   rospy
   std_msgs
+  pcl_ros
+  pcl_conversions
   #message_runtime
 )
 
@@ -152,7 +157,7 @@ find_package(catkin REQUIRED COMPONENTS
 catkin_package(
   INCLUDE_DIRS include
   LIBRARIES lidar_camera_offline_calibration
-  CATKIN_DEPENDS roscpp rospy std_msgs 
+  CATKIN_DEPENDS roscpp rospy std_msgs cv_bridge image_transport tf pcl_ros pcl_conversions
 #  DEPENDS system_lib
 )
 

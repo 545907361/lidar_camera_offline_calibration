@@ -6,31 +6,14 @@ CSubscriber::CSubscriber() :
         m_pLCM ( new lcm::LCM ( "udpm://239.255.76.67:7667?ttl=1" ) ),
         m_bInitialized ( false )
 {
-    initROS();
+    //IsInitialized();
     InitializeLCM();
 }
-void CSubscriber::initROS()
-{
-    std::string pointscloud_input, image_input, camera_info_input, fusison_output_topic;
-    nh_private.param<std::string>("pointcloud_input", pointscloud_input, "/laserPointCloud");
-    nh_private.param<std::string>("image_input", image_input, "/camera/rgb/image_raw");
-    nh_private.param<std::string>("camera_info_input", camera_info_input, "/camera_info");
-    nh_private.param<std::string>("fusion_output_topic", fusison_output_topic, "/points_output");
 
-    sub_cloud = nh.subscribe(pointscloud_input, 1, &CSubscriber::CloudCallback, this);
-    sub_image = nh.subscribe(image_input, 1, &CSubscriber::ImageCallback, this);
-    //sub_transform = nh.subscribe(camera_info_input, 1, &CSubscriber::IntrinsicsCallback, this);
-}
-void CSubscriber::CloudCallback(const sensor_msgs::PointCloud2::ConstPtr& cloud_msg)
-{
 
-}
-void CSubscriber::ImageCallback(const sensor_msgs::Image::ConstPtr& image_msg)
-{
-
-}
 void CSubscriber::run()
 {
+    std::cout << "into ImageCallback" << std::endl;
     int hl = 60;
     int sl = 25;
     int vl = 25;
@@ -194,7 +177,17 @@ void CSubscriber::run()
 
 bool CSubscriber::IsInitialized()
 {
-    return m_bInitialized;
+    std::string pointscloud_input, image_input, camera_info_input, fusison_output_topic;
+    nh_private.param<std::string>("pointcloud_input", pointscloud_input, "/laserPointCloud");
+    nh_private.param<std::string>("image_input", image_input, "/camera/rgb/image_raw");
+    nh_private.param<std::string>("camera_info_input", camera_info_input, "/camera_info");
+    nh_private.param<std::string>("fusion_output_topic", fusison_output_topic, "/points_output");
+
+    sub_cloud = nh.subscribe(pointscloud_input, 1, &CHandler::CloudCallback, &m_Handler);
+    sub_image = nh.subscribe(image_input, 1, &CHandler::ImageCallback, &m_Handler);
+    //sub_transform = nh.subscribe(camera_info_input, 1, &CHandler::IntrinsicsCallback, this);
+    m_bInitialized = true;
+    std::cout << "ros IsInitialized" << std::endl;
 }
 
 bool CSubscriber::InitializeLCM()
@@ -210,6 +203,7 @@ bool CSubscriber::InitializeLCM()
     m_pLCM->subscribe ( "CENTER_RS32LIDAR", &CHandler::CallbackRawLidar_32, &m_Handler );
     m_pLCM->subscribe ( "TRANSFORM", &CHandler::CallbackTransform, &m_Handler );
     m_bInitialized = true;
+    std::cout << "lcm IsInitialized" << std::endl;
 }
 void CSubscriber::setImageConfig(int i, int x){
     m_Handler.m_mtuImageConfig.lock();
