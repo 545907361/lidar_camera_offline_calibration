@@ -13,7 +13,7 @@ CSubscriber::CSubscriber() :
 
 void CSubscriber::run()
 {
-    std::cout << "into ImageCallback" << std::endl;
+    std::cout << "CSubscriber::run" << std::endl;
     int hl = 60;
     int sl = 25;
     int vl = 25;
@@ -50,8 +50,9 @@ void CSubscriber::run()
     cvui::init("panel");
     cv::Mat frame = cv::Mat(720, 710, CV_8UC3);
 
-    while ( 0==m_pLCM->handle() ) {
-
+    while (0==m_pLCM->handle()) {
+        //ros::ok()
+        //ros::spinOnce();
         frame = cv::Scalar(49, 52, 49);
 
         cvui::text(frame, 10, 20, "image config");
@@ -178,13 +179,13 @@ void CSubscriber::run()
 bool CSubscriber::IsInitialized()
 {
     std::string pointscloud_input, image_input, camera_info_input, fusison_output_topic;
-    nh_private.param<std::string>("pointcloud_input", pointscloud_input, "/laserPointCloud");
-    nh_private.param<std::string>("image_input", image_input, "/camera/rgb/image_raw");
+    nh_private.param<std::string>("pointcloud_input", pointscloud_input, "/rslidar_points");
+    nh_private.param<std::string>("image_input", image_input, "/pylon/raw_image_2");
     nh_private.param<std::string>("camera_info_input", camera_info_input, "/camera_info");
     nh_private.param<std::string>("fusion_output_topic", fusison_output_topic, "/points_output");
 
-    sub_cloud = nh.subscribe(pointscloud_input, 1, &CHandler::CloudCallback, &m_Handler);
-    sub_image = nh.subscribe(image_input, 1, &CHandler::ImageCallback, &m_Handler);
+    sub_cloud = nh.subscribe(pointscloud_input, 10, &CHandler::CloudCallback, &m_Handler);
+    sub_image = nh.subscribe(image_input, 10, &CHandler::ImageCallback, &m_Handler);
     //sub_transform = nh.subscribe(camera_info_input, 1, &CHandler::IntrinsicsCallback, this);
     m_bInitialized = true;
     std::cout << "ros IsInitialized" << std::endl;

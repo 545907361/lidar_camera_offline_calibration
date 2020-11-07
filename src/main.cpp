@@ -21,6 +21,5 @@ int main(int argc, char** argv)
     std::thread ros_thread;
     ros_thread = std::thread( std::mem_fn(&CSubscriber::run), g_pSubscriber);
     ros_thread.join();
-    ros::spin();
     return 0;
 }

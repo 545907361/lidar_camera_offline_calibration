@@ -1,6 +1,6 @@
 <launch>
-    <arg name="pointcloud_input" default="/velodyne_points" /> <!-- PointCloud source topic-->
-    <arg name="image_input" default="/pylon_camera_node/image_raw" /> <!-- Raw Image source topic to be rectified-->
+    <arg name="pointcloud_input" default="/rslidar_points" /> <!-- PointCloud source topic-->
+    <arg name="image_input" default="/pylon/raw_image_2" /> <!-- Raw Image source topic to be rectified-->
     <arg name="camera_info_input" default="/camera_info" /> <!-- CameraInfo source topic-->
     <arg name="fusion_output_topic" default="/points_output"/>
 

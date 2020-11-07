@@ -35,7 +35,6 @@ CHandler::CHandler()
 }
 void CHandler::ImageCallback(const sensor_msgs::Image::ConstPtr& image_msg)
 {
-    std::cout << "into ImageCallback" << std::endl;
     m_mtuRawImageFrame.lock();
     cv_bridge::CvImagePtr cv_image = cv_bridge::toCvCopy(image_msg, "bgr8");
     cv::Mat image = cv_image->image;
@@ -44,7 +43,6 @@ void CHandler::ImageCallback(const sensor_msgs::Image::ConstPtr& image_msg)
     jpegimage.copyTo(m_image);
     m_mtuRawImageFrame.unlock();
     m_bGetImage = true;
-
     fprintf(stdout, "do image process....\n");
     std::cout << jpegimage.rows << ", " << jpegimage.cols << std::endl;
     //cv::namedWindow("image", cv::WINDOW_NORMAL);
@@ -82,9 +80,9 @@ void CHandler::ImageCallback(const sensor_msgs::Image::ConstPtr& image_msg)
                 cv::Scalar(hh, sh, vh), mask);
 
     cv::Mat element = cv::getStructuringElement(cv::MORPH_RECT, cv::Size(5, 5));
-    cv::erode(mask, mask, element);
+    cv::erode(mask, mask, element);//腐蚀
     element = cv::getStructuringElement(cv::MORPH_RECT, cv::Size(7, 7));
-    cv::dilate(mask, mask, element);
+    cv::dilate(mask, mask, element);//膨胀
     element = cv::getStructuringElement(cv::MORPH_RECT, cv::Size(3, 3));
     cv::erode(mask, mask, element);
     cv::Mat mask_color;
@@ -342,7 +340,7 @@ void CHandler::CallbackRawImage_a_0(const lcm::ReceiveBuffer* recvBuf, const std
 
     cv::inRange(hsv_image, cv::Scalar(hl, sl, vl),
                 cv::Scalar(hh, sh, vh), mask);
-
+   
     cv::Mat element = cv::getStructuringElement(cv::MORPH_RECT, cv::Size(5, 5));
     cv::erode(mask, mask, element);
     element = cv::getStructuringElement(cv::MORPH_RECT, cv::Size(7, 7));
@@ -351,6 +349,7 @@ void CHandler::CallbackRawImage_a_0(const lcm::ReceiveBuffer* recvBuf, const std
     cv::erode(mask, mask, element);
     cv::Mat mask_color;
     cv::cvtColor(mask, mask_color, cv::COLOR_GRAY2BGR);
+     /*
     std::vector<std::vector<cv::Point> > contours;
     cv::findContours(mask, contours, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_NONE);
     cv::Point2f ellips_center;
@@ -376,7 +375,7 @@ void CHandler::CallbackRawImage_a_0(const lcm::ReceiveBuffer* recvBuf, const std
         cv::ellipse(jpegimage, box, cv::Scalar(0,0,255), 1, CV_AA);
         ellipse_num++;
     }
-    
+
     if(ellipse_num != 1){
         cv::Mat dst;
         dst.create(jpegimage.rows, jpegimage.cols * 2, CV_8UC3);
@@ -405,7 +404,74 @@ void CHandler::CallbackRawImage_a_0(const lcm::ReceiveBuffer* recvBuf, const std
     cv::imshow("image", dst);
     cv::waitKey(10);
     m_mtuShowConfig.unlock();
+    */
+    cv::Mat gray;
+    cv::cvtColor(jpegimage, gray, cv::COLOR_BGR2GRAY);
+        //高斯模糊平滑
 
+	//GaussianBlur( gray, gray, cv::Size(3, 3), 2, 2 );
+    //cv::bitwise_and(gray, mask, gray);
+    cv::Point2f ellips_center;
+    int ellipse_num = 0;
+    vector<cv::Vec3f> circles;
+    //霍夫变换
+    HoughCircles( gray, circles, CV_HOUGH_GRADIENT, 2, gray.rows/20, 200, 250, 0, 0 );
+    cv::cvtColor(gray, gray, cv::COLOR_GRAY2BGR);
+    //在原图中画出圆心和圆
+    std::cout << "\033[33mcircles.size\033[0m " << circles.size() << std::endl;
+    for( size_t i = 0; i < circles.size(); i++ )
+    {
+        //提取出圆心坐标
+        cv::Point center(cvRound(circles[i][0]), cvRound(circles[i][1]));
+        //提取出圆半径
+        int radius = cvRound(circles[i][2]);
+        if( radius<= mask.rows/40)continue;
+        ellips_center.x = cvRound(circles[i][0]);
+        ellips_center.y = cvRound(circles[i][1]);
+        //圆心
+        cv::circle( jpegimage, center, 3, cv::Scalar(0,255,0), -1, 8, 0 );
+        //圆
+        cv::circle( jpegimage, center, radius, cv::Scalar(0,0,255), 3, 8, 0 );
+        //圆心
+        cv::circle( gray, center, 3, cv::Scalar(0,255,0), -1, 8, 0 );
+        //圆
+        cv::circle( gray, center, radius, cv::Scalar(0,0,255), 3, 8, 0 );
+        ellipse_num++;
+   }
+    m_mtuShowConfig.lock();
+    cv::imshow( "jpegimage", gray );
+ 
+    cv::waitKey(10);
+    m_mtuShowConfig.unlock();
+   /*
+    if(ellipse_num != 1){
+        cv::Mat dst;
+        dst.create(jpegimage.rows, jpegimage.cols * 2, CV_8UC3);
+        jpegimage.copyTo(dst(cv::Rect(0, 0, jpegimage.cols, jpegimage.rows)));
+        mask_color.copyTo(dst(cv::Rect(mask_color.cols, 0, mask_color.cols, mask_color.rows)));
+        m_mtuShowConfig.lock();
+        cv::imshow("image", dst);
+        cv::waitKey(10);
+        m_mtuShowConfig.unlock();
+        m_mtuRawImageFrame.unlock();
+        std::cout << "\033[33mWarning: have " << ellipse_num << " (!=1) ellipses\033[0m" << std::endl;
+        return;
+    }
+    m_mtuPoint2d.lock();
+    point_2d.x = ellips_center.x;
+    point_2d.y = ellips_center.y;
+    m_mtuPoint2d.unlock();
+    cv::circle(jpegimage, ellips_center, 2, cv::Scalar(255, 0, 0), -1);
+    cv::circle(mask_color, ellips_center, 2, cv::Scalar(255, 0, 0), -1);
+    std::cout << "ellipse_center (x, y): " << point_2d.x << ", " << point_2d.y << std::endl;
+    cv::Mat dst;
+    dst.create(jpegimage.rows, jpegimage.cols * 2, CV_8UC3);
+    jpegimage.copyTo(dst(cv::Rect(0, 0, jpegimage.cols, jpegimage.rows)));
+    mask_color.copyTo(dst(cv::Rect(mask_color.cols, 0, mask_color.cols, mask_color.rows)));
+    m_mtuShowConfig.lock();
+    cv::imshow("image", dst);
+    cv::waitKey(10);
+    m_mtuShowConfig.unlock();*/
 }
 
 ///32线激光雷达回调函数
