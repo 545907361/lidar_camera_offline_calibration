@@ -10,6 +10,8 @@ class CSubscriber
     ros::Subscriber sub_cloud;
     ros::Subscriber sub_image;
     ros::Subscriber sub_transform;
+    dynamic_reconfigure::Server<lidar_camera_offline_calibration::CalibrationConfig> server;
+    dynamic_reconfigure::Server<lidar_camera_offline_calibration::CalibrationConfig>::CallbackType f;
 
 public:
     CSubscriber();

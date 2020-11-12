@@ -17,6 +17,8 @@
 #include <pcl/search/search.h>
 #include <pcl/filters/conditional_removal.h>
 #include <pcl/filters/voxel_grid.h>
+#include <dynamic_reconfigure/server.h>
+#include <lidar_camera_offline_calibration/CalibrationConfig.h>
 
 #include <vector>
 #include <mutex>
@@ -39,6 +41,7 @@
 #include <pcl/surface/mls.h>
 
 using namespace std;
+extern Eigen::Matrix3f K;
 
 class CHandler
 {
@@ -51,6 +54,7 @@ public:
     void ImageCallback(const sensor_msgs::Image::ConstPtr& image_msg);
     void CloudCallback(const sensor_msgs::PointCloud2::ConstPtr& cloud_msg);
     //void CallbackTransform(const lcm::ReceiveBuffer* recvBuf, const std::string& channelName, const TRANSFORM* msg);
+    void dynamic_callback(lidar_camera_offline_calibration::CalibrationConfig &config, uint32_t level);
 
     void recordPair();
     void clearRecord();
@@ -96,6 +100,7 @@ private:
     int64_t m_nRollingCounter;
 
     cv::Mat T, R;
+
 private:
 
 

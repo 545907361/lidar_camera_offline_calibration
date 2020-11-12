@@ -50,9 +50,9 @@ void CSubscriber::run()
     cvui::init("panel");
     cv::Mat frame = cv::Mat(720, 710, CV_8UC3);
 
-    while (0==m_pLCM->handle()) {
-        //ros::ok()
-        //ros::spinOnce();
+    while (ros::ok()) {
+        //0==m_pLCM->handle()
+        ros::spinOnce();
         frame = cv::Scalar(49, 52, 49);
 
         cvui::text(frame, 10, 20, "image config");
@@ -178,15 +178,35 @@ void CSubscriber::run()
 
 bool CSubscriber::IsInitialized()
 {
-    std::string pointscloud_input, image_input, camera_info_input, fusison_output_topic;
+    std::string pointscloud_input, image_input, camera_info_input, fusison_output_topic,camera_matrix,tmp;
     nh_private.param<std::string>("pointcloud_input", pointscloud_input, "/rslidar_points");
     nh_private.param<std::string>("image_input", image_input, "/pylon/raw_image_2");
     nh_private.param<std::string>("camera_info_input", camera_info_input, "/camera_info");
     nh_private.param<std::string>("fusion_output_topic", fusison_output_topic, "/points_output");
+    nh_private.param<std::string>("camera_matrix", camera_matrix, "475.0,0.0,240.0,0.0,475.0,151.0,0.0,0.0,1.0");
+
+    std::stringstream input(camera_matrix);
+    for (size_t i = 0; i < 3*3; i++)
+    {
+        getline(input, tmp, ',');
+        // fprintf(stdout, "tmp:%s==%f\n",tmp.c_str(),atof(tmp.c_str()));
+        K(i/3,i%3)=atof(tmp.c_str());
+    }
+    // ROS_INFO("K : %f %f %f %f %f %f %f %f %f", 
+    //         K(0,0),K(0,1),K(0,2),
+    //         K(1,0),K(1,1),K(1,2),
+    //         K(2,0),K(2,1),K(2,2)
+    //         );
 
     sub_cloud = nh.subscribe(pointscloud_input, 10, &CHandler::CloudCallback, &m_Handler);
     sub_image = nh.subscribe(image_input, 10, &CHandler::ImageCallback, &m_Handler);
-    //sub_transform = nh.subscribe(camera_info_input, 1, &CHandler::IntrinsicsCallback, this);
+    // sub_transform = nh.subscribe(camera_info_input, 1, &CHandler::IntrinsicsCallback, this);
+
+    /*动态配置参数,编译错误*/
+    // f = boost::bind(&CHandler::dynamic_callback,&m_Handler, _1, _2);
+    // server.setCallback(f);
+    /********************/
+
     m_bInitialized = true;
     std::cout << "ros IsInitialized" << std::endl;
 }

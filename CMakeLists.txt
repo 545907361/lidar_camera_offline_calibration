@@ -62,6 +62,7 @@ find_package(catkin REQUIRED COMPONENTS
   std_msgs
   pcl_ros
   pcl_conversions
+  dynamic_reconfigure
   #message_runtime
 )
 
@@ -140,10 +141,9 @@ find_package(catkin REQUIRED COMPONENTS
 ##     and list every .cfg file to be processed
 
 ## Generate dynamic reconfigure parameters in the 'cfg' folder
-# generate_dynamic_reconfigure_options(
-#   cfg/DynReconf1.cfg
-#   cfg/DynReconf2.cfg
-# )
+ generate_dynamic_reconfigure_options(
+   cfg/Calibration.cfg
+ )
 
 ###################################
 ## catkin specific configuration ##
@@ -157,7 +157,7 @@ find_package(catkin REQUIRED COMPONENTS
 catkin_package(
   INCLUDE_DIRS include
   LIBRARIES lidar_camera_offline_calibration
-  CATKIN_DEPENDS roscpp rospy std_msgs cv_bridge image_transport tf pcl_ros pcl_conversions
+  CATKIN_DEPENDS roscpp rospy std_msgs cv_bridge image_transport tf pcl_ros pcl_conversions 
 #  DEPENDS system_lib
 )
 
@@ -174,14 +174,14 @@ include_directories(include
 #build release executable and library
 if(${CMAKE_BUILD_TYPE} MATCHES "RELEASE")
     #build executable
-    ADD_EXECUTABLE(${PROJECT_NAME} ${PROJECT_SOURCES} ${PROJECT_HEADERS})
-    TARGET_LINK_LIBRARIES(${PROJECT_NAME} ${PROJECT_LIBRARIES} ${OpenCV_LIBS}  lcm pthread ${PCL_LIBRARIES} ${catkin_LIBRARIES})
-    #add_dependencies(${PROJECT_NAME} ${${PROJECT_NAME}_generate_messages_cpp} )
+    ADD_EXECUTABLE(app_${PROJECT_NAME} ${PROJECT_SOURCES} ${PROJECT_HEADERS})
+    TARGET_LINK_LIBRARIES(app_${PROJECT_NAME} ${PROJECT_LIBRARIES} ${OpenCV_LIBS}  lcm pthread ${PCL_LIBRARIES} ${catkin_LIBRARIES})
+    add_dependencies(app_${PROJECT_NAME} ${PROJECT_NAME}_gencfg)
     #build library
     #ADD_LIBRARY(lidar_camera_offline_calibration STATIC ${CMAKE_CURRENT_SOURCE_DIR}/src/test.cpp)
 
     #install built executable and library;
-    INSTALL(TARGETS ${PROJECT_NAME}#lidar_camera_offline_calibration
+    INSTALL(TARGETS app_${PROJECT_NAME}#lidar_camera_offline_calibration
             #PERMISSIONS OWNER_EXECUTE
             RUNTIME DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/../../atd-d2d-integration/applications/bin#executable;
             ARCHIVE DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/../../atd-d2d-integration/applications/lib#dynamic lib, *.a;
@@ -190,14 +190,14 @@ if(${CMAKE_BUILD_TYPE} MATCHES "RELEASE")
 #build debug executable and library
 else()
     #build executable
-    ADD_EXECUTABLE(${PROJECT_NAME}_d ${PROJECT_SOURCES} ${PROJECT_HEADERS})
-    TARGET_LINK_LIBRARIES(${PROJECT_NAME}_d ${PROJECT_LIBRARIES} ${OpenCV_LIBS} lcm pthread ${PCL_LIBRARIES} ${catkin_LIBRARIES})
-    #add_dependencies(${PROJECT_NAME} ${${PROJECT_NAME}_generate_messages_cpp} )
+    ADD_EXECUTABLE(app_${PROJECT_NAME}_d ${PROJECT_SOURCES} ${PROJECT_HEADERS})
+    TARGET_LINK_LIBRARIES(app_${PROJECT_NAME}_d ${PROJECT_LIBRARIES} ${OpenCV_LIBS} lcm pthread ${PCL_LIBRARIES} ${catkin_LIBRARIES})
+    add_dependencies(app_${PROJECT_NAME} ${PROJECT_NAME}_gencfg)
     #build library
     #ADD_LIBRARY(lidar_camera_offline_calibration_d STATIC ${CMAKE_CURRENT_SOURCE_DIR}/src/test.cpp)
 
     #install built executable and library;
-    INSTALL(TARGETS ${PROJECT_NAME}_d#lidar_camera_offline_calibration_d
+    INSTALL(TARGETS app_${PROJECT_NAME}_d#lidar_camera_offline_calibration_d
             #PERMISSIONS OWNER_EXECUTE
             RUNTIME DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/../../atd-d2d-integration/applications/bin#executable;
             ARCHIVE DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/../../atd-d2d-integration/applications/lib#dynamic lib, *.a;

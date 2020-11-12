@@ -1,5 +1,5 @@
 #include "chandler.h"
-
+Eigen::Matrix3f K = Eigen::Matrix3f::Zero();
 CHandler::CHandler()
 {
     m_bGetLidarClouds = false;
@@ -32,6 +32,24 @@ CHandler::CHandler()
     image_config[6] = 200;
     m_mtuImageConfig.unlock();
 
+}
+void dynamic_callback(lidar_camera_offline_calibration::CalibrationConfig &config, uint32_t level) 
+{
+  ROS_INFO("Reconfigure Request: %s %s %s", 
+            config.pointcloud_input.c_str(), config.image_input.c_str(), 
+            config.camera_matrix.c_str()
+            );
+    // std::string tmp;
+    // Eigen::Matrix3f myK = Eigen::Matrix3f::Zero();
+    // std::stringstream input(config.camera_matrix.c_str());
+    // for (size_t i = 0; i < 3*3; i++)
+    // {
+    //     getline(input, tmp, ',');
+    //     myK<<atof(tmp.c_str());
+    // }
+    // ROS_INFO("myK double: %f %f %f", 
+    //         myK(0,0),myK(0,1),myK(0,2)
+    //         );
 }
 void CHandler::ImageCallback(const sensor_msgs::Image::ConstPtr& image_msg)
 {
@@ -349,7 +367,7 @@ void CHandler::CallbackRawImage_a_0(const lcm::ReceiveBuffer* recvBuf, const std
     cv::erode(mask, mask, element);
     cv::Mat mask_color;
     cv::cvtColor(mask, mask_color, cv::COLOR_GRAY2BGR);
-     /*
+     /**/
     std::vector<std::vector<cv::Point> > contours;
     cv::findContours(mask, contours, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_NONE);
     cv::Point2f ellips_center;
@@ -404,18 +422,19 @@ void CHandler::CallbackRawImage_a_0(const lcm::ReceiveBuffer* recvBuf, const std
     cv::imshow("image", dst);
     cv::waitKey(10);
     m_mtuShowConfig.unlock();
-    */
+    /*
     cv::Mat gray;
     cv::cvtColor(jpegimage, gray, cv::COLOR_BGR2GRAY);
-        //高斯模糊平滑
-
+    //高斯模糊平滑
 	//GaussianBlur( gray, gray, cv::Size(3, 3), 2, 2 );
-    //cv::bitwise_and(gray, mask, gray);
+    //均值滤波平滑
+	//blur( gray, gray, cv::Size(3, 3));
+    cv::bitwise_and(gray, mask, gray);
     cv::Point2f ellips_center;
     int ellipse_num = 0;
     vector<cv::Vec3f> circles;
     //霍夫变换
-    HoughCircles( gray, circles, CV_HOUGH_GRADIENT, 2, gray.rows/20, 200, 250, 0, 0 );
+    HoughCircles( gray, circles, CV_HOUGH_GRADIENT, 2, gray.rows/10, 150, 150, 0, 0 );
     cv::cvtColor(gray, gray, cv::COLOR_GRAY2BGR);
     //在原图中画出圆心和圆
     std::cout << "\033[33mcircles.size\033[0m " << circles.size() << std::endl;
@@ -873,8 +892,8 @@ void CHandler::testResult(){
     ET(3,1) = 0.0;
     ET(3,2) = 0.0;
     ET(3,3) = 1.0;
-    Eigen::Matrix3f K = Eigen::Matrix3f::Zero();
-    K << 475.0, 0.0, 240.0, 0.0, 475.0, 151.0, 0.0, 0.0, 1.0;
+    // Eigen::Matrix3f K = Eigen::Matrix3f::Zero();
+    // K << 475.0, 0.0, 240.0, 0.0, 475.0, 151.0, 0.0, 0.0, 1.0;
     project2image(m_pc, m_image, result_image, ET, K);
     std::string save_path = "./test_result.png";
     cv::imwrite(save_path, result_image);

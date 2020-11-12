@@ -6,7 +6,6 @@
 
 CSubscriber* g_pSubscriber;
 
-
 int main(int argc, char** argv)
 {
 
