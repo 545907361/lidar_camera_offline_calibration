@@ -174,14 +174,14 @@ include_directories(include
 #build release executable and library
 if(${CMAKE_BUILD_TYPE} MATCHES "RELEASE")
     #build executable
-    ADD_EXECUTABLE(app_${PROJECT_NAME} ${PROJECT_SOURCES} ${PROJECT_HEADERS})
-    TARGET_LINK_LIBRARIES(app_${PROJECT_NAME} ${PROJECT_LIBRARIES} ${OpenCV_LIBS}  lcm pthread ${PCL_LIBRARIES} ${catkin_LIBRARIES})
-    add_dependencies(app_${PROJECT_NAME} ${PROJECT_NAME}_gencfg)
+    ADD_EXECUTABLE(${PROJECT_NAME}_node ${PROJECT_SOURCES} ${PROJECT_HEADERS})
+    TARGET_LINK_LIBRARIES(${PROJECT_NAME}_node ${PROJECT_LIBRARIES} ${OpenCV_LIBS}  lcm pthread ${PCL_LIBRARIES} ${catkin_LIBRARIES})
+    add_dependencies(${PROJECT_NAME}_node ${PROJECT_NAME}_gencfg)
     #build library
     #ADD_LIBRARY(lidar_camera_offline_calibration STATIC ${CMAKE_CURRENT_SOURCE_DIR}/src/test.cpp)
 
     #install built executable and library;
-    INSTALL(TARGETS app_${PROJECT_NAME}#lidar_camera_offline_calibration
+    INSTALL(TARGETS ${PROJECT_NAME}_node#lidar_camera_offline_calibration
             #PERMISSIONS OWNER_EXECUTE
             RUNTIME DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/../../atd-d2d-integration/applications/bin#executable;
             ARCHIVE DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/../../atd-d2d-integration/applications/lib#dynamic lib, *.a;
@@ -190,14 +190,14 @@ if(${CMAKE_BUILD_TYPE} MATCHES "RELEASE")
 #build debug executable and library
 else()
     #build executable
-    ADD_EXECUTABLE(app_${PROJECT_NAME}_d ${PROJECT_SOURCES} ${PROJECT_HEADERS})
-    TARGET_LINK_LIBRARIES(app_${PROJECT_NAME}_d ${PROJECT_LIBRARIES} ${OpenCV_LIBS} lcm pthread ${PCL_LIBRARIES} ${catkin_LIBRARIES})
-    add_dependencies(app_${PROJECT_NAME} ${PROJECT_NAME}_gencfg)
+    ADD_EXECUTABLE(${PROJECT_NAME}_d_node ${PROJECT_SOURCES} ${PROJECT_HEADERS})
+    TARGET_LINK_LIBRARIES(${PROJECT_NAME}_d_node ${PROJECT_LIBRARIES} ${OpenCV_LIBS} lcm pthread ${PCL_LIBRARIES} ${catkin_LIBRARIES})
+    add_dependencies(${PROJECT_NAME}_d_node ${PROJECT_NAME}_gencfg)
     #build library
     #ADD_LIBRARY(lidar_camera_offline_calibration_d STATIC ${CMAKE_CURRENT_SOURCE_DIR}/src/test.cpp)
 
     #install built executable and library;
-    INSTALL(TARGETS app_${PROJECT_NAME}_d#lidar_camera_offline_calibration_d
+    INSTALL(TARGETS ${PROJECT_NAME}_d_node#lidar_camera_offline_calibration_d
             #PERMISSIONS OWNER_EXECUTE
             RUNTIME DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/../../atd-d2d-integration/applications/bin#executable;
             ARCHIVE DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/../../atd-d2d-integration/applications/lib#dynamic lib, *.a;

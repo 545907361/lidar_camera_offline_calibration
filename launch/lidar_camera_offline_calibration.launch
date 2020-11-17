@@ -1,10 +1,11 @@
 <launch>
     <arg name="pointcloud_input" default="/rslidar_points" /> <!-- PointCloud source topic-->
-    <arg name="image_input" default="/pylon/raw_image_2" /> <!-- Raw Image source topic to be rectified-->
+    <arg name="image_input" default="/pylon/raw_image_3" /> <!-- Raw Image source topic to be rectified-->
     <arg name="camera_info_input" default="/camera_info" /> <!-- CameraInfo source topic-->
     <arg name="fusion_output_topic" default="/points_output"/>
     <arg name="camera_matrix" default="475.0,0.0,240.0,0.0,475.0,151.0,0.0,0.0,1.0"/>
-    <node pkg="lidar_camera_offline_calibration" type="app_lidar_camera_offline_calibration" name="ball_calibration" output="screen">
+    <arg name="save_path" default="/home/feng/catkin_ws/src/lidar_camera_offline_calibration/cfg"/>
+    <node pkg="lidar_camera_offline_calibration" type="lidar_camera_offline_calibration_node" name="ball_calibration" output="screen">
      
         <param name="pointcloud_input" value="$(arg pointcloud_input)" />
         <param name="image_input" value="$(arg image_input)" />

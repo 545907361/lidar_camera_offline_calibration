@@ -3,47 +3,45 @@
 #include "cvui.h"
 CSubscriber::CSubscriber() :
         nh_private("~"),
-        m_pLCM ( new lcm::LCM ( "udpm://239.255.76.67:7667?ttl=1" ) ),
         m_bInitialized ( false )
 {
     //IsInitialized();
-    InitializeLCM();
 }
 
 
 void CSubscriber::run()
 {
     std::cout << "CSubscriber::run" << std::endl;
-    int hl = 60;
+    int hl = 110;
     int sl = 25;
     int vl = 25;
-    int hh = 130;
+    int hh = 140;
     int sh = 255;
     int vh = 255;
     int contours_num = 200;
 
     float zl = -1.0;
-    float zh =  0.5;
-    float xl = -2.0;
-    float xh =  1.5;
-    float yl =  2.0;
+    float zh =  2.5;
+    float xl = -0.3;
+    float xh =  10.0;
+    float yl =  -5.0;
     float yh =  5.0;
     float ball_r = 30.0;
 
 
-    int hlo = 60;
+    int hlo = 100;
     int slo = 25;
     int vlo = 25;
-    int hho = 130;
+    int hho = 140;
     int sho = 255;
     int vho = 255;
     int contours_numo = 200;
 
-    float zlo = -1.0;
-    float zho =  0.5;
-    float xlo = -2.0;
-    float xho =  1.5;
-    float ylo =  2.0;
+    float zlo = -0.0;
+    float zho =  2.5;
+    float xlo = -0.3;
+    float xho =  5.0;
+    float ylo =  -5.0;
     float yho =  5.0;
     float ball_ro = 30.0;
     //cv::namedWindow("panel");
@@ -184,6 +182,7 @@ bool CSubscriber::IsInitialized()
     nh_private.param<std::string>("camera_info_input", camera_info_input, "/camera_info");
     nh_private.param<std::string>("fusion_output_topic", fusison_output_topic, "/points_output");
     nh_private.param<std::string>("camera_matrix", camera_matrix, "475.0,0.0,240.0,0.0,475.0,151.0,0.0,0.0,1.0");
+    nh_private.param<std::string>("save_path", save_path, "/home/feng/catkin_ws/src/lidar_camera_offline_calibration/cfg");
 
     std::stringstream input(camera_matrix);
     for (size_t i = 0; i < 3*3; i++)
@@ -211,21 +210,7 @@ bool CSubscriber::IsInitialized()
     std::cout << "ros IsInitialized" << std::endl;
 }
 
-bool CSubscriber::InitializeLCM()
-{
-    if ( !m_pLCM->good() )
-    {
-        fprintf ( stderr, "initialize communication error, please check the ethernet connection\n" );
-        m_bInitialized = false;
-        return ( false );
-    }
 
-    m_pLCM->subscribe ( "GMSL_IMAGE_ENCODE_a_0", &CHandler::CallbackRawImage_a_0, &m_Handler );
-    m_pLCM->subscribe ( "CENTER_RS32LIDAR", &CHandler::CallbackRawLidar_32, &m_Handler );
-    m_pLCM->subscribe ( "TRANSFORM", &CHandler::CallbackTransform, &m_Handler );
-    m_bInitialized = true;
-    std::cout << "lcm IsInitialized" << std::endl;
-}
 void CSubscriber::setImageConfig(int i, int x){
     m_Handler.m_mtuImageConfig.lock();
     if(m_Handler.image_config.size() == 7){

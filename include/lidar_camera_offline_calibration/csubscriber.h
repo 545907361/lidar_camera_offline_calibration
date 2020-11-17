@@ -23,14 +23,12 @@ public:
     bool showLock();
     bool showUnLock();
 
-private:
-    bool InitializeLCM();
+
 
 public:
 
 private:
 
-    lcm::LCM* m_pLCM;
     bool m_bInitialized;
     CHandler m_Handler;
 };

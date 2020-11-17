@@ -1,8 +1,8 @@
 #ifndef CHANDLER_H
 #define CHANDLER_H
-#include <lcm/lcm-cpp.hpp>
 
 #include <ros/ros.h>
+#include <ros/package.h>
 #include <tf/tf.h>
 #include <tf/transform_listener.h>
 #include <cv_bridge/cv_bridge.h>
@@ -22,9 +22,7 @@
 
 #include <vector>
 #include <mutex>
-#include <GMSL_IMAGE_ENCODE.hpp>
-#include <RSLIDAR_32_FRAME.hpp>
-#include <TRANSFORM.hpp>
+
 #include <opencv2/core.hpp>
 #include <opencv2/opencv.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
@@ -42,15 +40,12 @@
 
 using namespace std;
 extern Eigen::Matrix3f K;
-
+extern std::string save_path;
 class CHandler
 {
 public:
     CHandler();
 
-    void CallbackRawImage_a_0(const lcm::ReceiveBuffer* recvBuf, const std::string& channelName, const GMSL_IMAGE_ENCODE* msg);
-    void CallbackRawLidar_32(const lcm::ReceiveBuffer* recvBuf, const std::string& channelName, const RSLIDAR_32_FRAME* msg);
-    void CallbackTransform(const lcm::ReceiveBuffer* recvBuf, const std::string& channelName, const TRANSFORM* msg);
     void ImageCallback(const sensor_msgs::Image::ConstPtr& image_msg);
     void CloudCallback(const sensor_msgs::PointCloud2::ConstPtr& cloud_msg);
     //void CallbackTransform(const lcm::ReceiveBuffer* recvBuf, const std::string& channelName, const TRANSFORM* msg);
@@ -90,9 +85,7 @@ private:
     mutex m_mtuPoint2d;
     mutex m_mtuPoint3d;
 
-    GMSL_IMAGE_ENCODE m_msgRawImageFrame_a_0;
-    RSLIDAR_32_FRAME  m_msgRawLidarFrame_32;
-    TRANSFORM m_msgTransform;
+
     std::mutex m_mtuTransform;
     bool m_bTransformInited;
 
