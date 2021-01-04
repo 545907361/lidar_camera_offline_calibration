@@ -31,6 +31,8 @@ FILE(GLOB_RECURSE PROJECT_HEADERS "include/*.h" "include/*.hpp" "include/${PROJE
 #set source files:*.cpp, *.c, *.cc;
 FILE(GLOB_RECURSE PROJECT_SOURCES "src/*.cpp" "src/*.c" "src/*.cc" "../src/*.cpp" "../src/*.cc" "../src/*.c")
 #AUX_SOURCE_DIRECTORY(${CMAKE_CURRENT_SOURCE_DIR}/src/ PROJECT_SOURCES)
+file(GLOB_RECURSE NODE_SRCS "src/*_node.cpp")
+list(REMOVE_ITEM PROJECT_SOURCES ${NODE_SRCS})
 
 #set library files: *.lib
 FILE(GLOB_RECURSE PROJECT_LIBRARIES "lib/*.a")
@@ -60,6 +62,7 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   rospy
   std_msgs
+  geometry_msgs
   pcl_ros
   pcl_conversions
   dynamic_reconfigure
@@ -157,7 +160,7 @@ find_package(catkin REQUIRED COMPONENTS
 catkin_package(
   INCLUDE_DIRS include
   LIBRARIES lidar_camera_offline_calibration
-  CATKIN_DEPENDS roscpp rospy std_msgs cv_bridge image_transport tf pcl_ros pcl_conversions 
+  CATKIN_DEPENDS roscpp rospy std_msgs cv_bridge image_transport tf pcl_ros pcl_conversions geometry_msgs
 #  DEPENDS system_lib
 )
 
@@ -171,11 +174,41 @@ include_directories(include
   include include/${PROJECT_NAME}
   ${catkin_INCLUDE_DIRS}
 )
+############################################
+##################### lidar2lidar ################
+############################################
+
+
+# MultiLidar Calibrator
+add_library(multi_lidar_calibrator_lib SHARED
+        src/multi_lidar_calibrator.cpp
+        include/multi_lidar_calibrator.h)
+
+target_include_directories(multi_lidar_calibrator_lib PRIVATE
+        ${OpenCV_INCLUDE_DIRS}
+        )
+
+target_link_libraries(multi_lidar_calibrator_lib
+        ${catkin_LIBRARIES}
+        )
+
+add_executable(multi_lidar_calibrator
+        src/multi_lidar_calibrator_node.cpp
+        )
+
+target_include_directories(multi_lidar_calibrator PRIVATE
+        include)
+
+target_link_libraries(multi_lidar_calibrator
+        multi_lidar_calibrator_lib)
+###############################################################
+
+
 #build release executable and library
 if(${CMAKE_BUILD_TYPE} MATCHES "RELEASE")
     #build executable
-    ADD_EXECUTABLE(${PROJECT_NAME}_node ${PROJECT_SOURCES} ${PROJECT_HEADERS})
-    TARGET_LINK_LIBRARIES(${PROJECT_NAME}_node ${PROJECT_LIBRARIES} ${OpenCV_LIBS}  lcm pthread ${PCL_LIBRARIES} ${catkin_LIBRARIES})
+    ADD_EXECUTABLE(${PROJECT_NAME}_node src/lidar_camera_offline_calibration_node.cpp ${PROJECT_SOURCES} ${PROJECT_HEADERS})
+    TARGET_LINK_LIBRARIES(${PROJECT_NAME}_node ${PROJECT_LIBRARIES} ${OpenCV_LIBS} pthread ${PCL_LIBRARIES} ${catkin_LIBRARIES})
     add_dependencies(${PROJECT_NAME}_node ${PROJECT_NAME}_gencfg)
     #build library
     #ADD_LIBRARY(lidar_camera_offline_calibration STATIC ${CMAKE_CURRENT_SOURCE_DIR}/src/test.cpp)
@@ -190,8 +223,8 @@ if(${CMAKE_BUILD_TYPE} MATCHES "RELEASE")
 #build debug executable and library
 else()
     #build executable
-    ADD_EXECUTABLE(${PROJECT_NAME}_d_node ${PROJECT_SOURCES} ${PROJECT_HEADERS})
-    TARGET_LINK_LIBRARIES(${PROJECT_NAME}_d_node ${PROJECT_LIBRARIES} ${OpenCV_LIBS} lcm pthread ${PCL_LIBRARIES} ${catkin_LIBRARIES})
+    ADD_EXECUTABLE(${PROJECT_NAME}_d_node src/lidar_camera_offline_calibration_node.cpp ${PROJECT_SOURCES} ${PROJECT_HEADERS})
+    TARGET_LINK_LIBRARIES(${PROJECT_NAME}_d_node ${PROJECT_LIBRARIES} ${OpenCV_LIBS} pthread ${PCL_LIBRARIES} ${catkin_LIBRARIES})
     add_dependencies(${PROJECT_NAME}_d_node ${PROJECT_NAME}_gencfg)
     #build library
     #ADD_LIBRARY(lidar_camera_offline_calibration_d STATIC ${CMAKE_CURRENT_SOURCE_DIR}/src/test.cpp)

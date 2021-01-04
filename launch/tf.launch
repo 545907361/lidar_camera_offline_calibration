@@ -1,0 +1,15 @@
+<launch>
+
+  <param name="use_sim_time" value="true"/>
+  
+  <node pkg="tf" type="static_transform_publisher" name="fl_fh" args="0.047514 -1.61584 -1.10422 0.00490281 0.00829276  0.0154157 /fh /fl 10" />
+
+  <node pkg="tf" type="static_transform_publisher" name="lf_fh" args="1.00785 -0.443069 -0.471545  1.36427  0.0717998 -0.0816414 /fh /lf 10" />
+
+  <node pkg="tf" type="static_transform_publisher" name="rf_fh" args="-0.993104 -0.465174 -0.470066 1.68516  3.1134 3.06347 /fh /rf 10" />
+
+  <node pkg="tf" type="static_transform_publisher" name="lr_fr" args="0.814268  3.60834 -1.09568     1.53946  -0.0096379 -0.00206728 /fh /lr 10" />
+
+  <node pkg="tf" type="static_transform_publisher" name="rr_fh" args="-0.993823   3.63243  -1.06587 1.61811 3.12154 3.13014 /fh /rr 10" />
+
+</launch>

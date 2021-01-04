@@ -2,7 +2,7 @@ lidar_camera_offline_calibration
 ===========
 ![ROS](https://img.shields.io/badge/ROS-Kinetic-brightgreen.svg)  ![OS](https://img.shields.io/badge/OS-Ubuntu%2016.04-orange.svg ) ![OpenCV](https://img.shields.io/badge/OpenCV-3.0-blue.svg)
 
-
+The center of the sphere is calculated from the LiDAR point cloud and the image. In the LiDAR point cloud, the center of the ellipse is steadily determined using RANSAC. In the image, the contour of the sphere is detected by the edge, and then the ellipse is fitted to the edge point. Since the size of the ellipse is known,according to the ellipse parameters,the center of the sphere is determined and the external parameters of the LiDAR and camera pair are finally given.
 
 ## Usage:
 
@@ -10,7 +10,7 @@ Follow the steps below to use this (`lidar_camera_offline_calibration`) package:
 
 1. [Create a catkin workspace](http://wiki.ros.org/catkin/Tutorials/create_a_workspace) (if you do not have one setup already). 
 1. Navigate to the `src` folder in your catkin workspace: `cd ~/catkin_ws/src`
-1. Clone this repository: `git clone https://github.com/545907361/lidar_camera_offline_calibration.git`
+1. Clone this repository: `git clone https://github.com/GroupOfTHUMengShiGuo/lidar_camera_offline_calibration.git`
 1. Compile and build the package: `cd ~/catkin_ws && catkin_make`
 1. Add the catkin workspace to your ROS environment: `source ~/catkin_ws/devel/setup.bash`
 1. Run the ROS launch in this package: `roslaunch lidar_camera_offline_calibration lidar_camera_offline_calibration.launch`
@@ -36,6 +36,7 @@ Follow the steps below to use this (`lidar_camera_offline_calibration`) package:
 
 ## To do list 
 
+* Improved image and point cloud sphere recognition algorithm.
+* Improved external reference solution algorithm.
 * After the completion of the calibration, the point cloud projection topic was added to reflect the calibration accuracy more intuitively.
-* Improved image sphere recognition algorithm
 

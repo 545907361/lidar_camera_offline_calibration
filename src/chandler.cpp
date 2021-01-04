@@ -9,8 +9,8 @@ CHandler::CHandler()
     pointcloud_viewer = new pcl::visualization::PCLVisualizer("pointcloud_viewer");
     m_pc = pcl::PointCloud<pcl::PointXYZ>::Ptr(new pcl::PointCloud<pcl::PointXYZ>);
     pointcloud_viewer -> setBackgroundColor(0, 0, 0);
-    pcl::visualization::PCLVisualizer* my_viewer = new pcl::visualization::PCLVisualizer("my ");
-    my_viewer -> setBackgroundColor(0, 0, 200);
+    //pcl::visualization::PCLVisualizer* my_viewer = new pcl::visualization::PCLVisualizer("my ");
+    //my_viewer -> setBackgroundColor(0, 0, 200);
     m_mtuPclConfig.lock();
     pcl_config.resize(7);
     pcl_config[0] = -1.0;

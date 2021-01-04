@@ -1,6 +1,6 @@
 #ifndef CSUBSCRIBER_H
 #define CSUBSCRIBER_H
-#include <lcm/lcm-cpp.hpp>
+
 #include "chandler.h"
 
 class CSubscriber
